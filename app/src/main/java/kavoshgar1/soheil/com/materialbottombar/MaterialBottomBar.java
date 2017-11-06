@@ -13,12 +13,14 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
@@ -45,6 +47,8 @@ public class MaterialBottomBar extends LinearLayout{
 
     private Paint paint_circle ;
 
+
+    private  Boolean is_closed = false ;
 
     private  static  int current_bottom_item = 0 ;
 
@@ -178,10 +182,11 @@ public class MaterialBottomBar extends LinearLayout{
 
     public void closeItem() {
         if(current_bottom_item != 0 ){
+            final Handler handler = new Handler();
             final Button btn = findViewById(current_bottom_item);
             points_bitmap_onCircle.clear();
             rectF[0] = new RectF( btn.getLeft() , - 8 * btn.getTop(), btn.getRight() , btn.getHeight());
-            Thread thread = new Thread(new Runnable() {
+            final Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while (radiusCircle != 0) {
@@ -194,7 +199,12 @@ public class MaterialBottomBar extends LinearLayout{
                         }
                     }
 
-                  btn.startAnimation(getReverseAnimationbtn(btn));
+                   handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            btn.startAnimation(getReverseAnimationbtn(btn));
+                        }
+                    });
                 }
             });
             thread.start();
@@ -243,6 +253,34 @@ public class MaterialBottomBar extends LinearLayout{
     }
 
 
+
+    public  void close() {
+        is_closed = true ;
+        closeItem();
+        AnimationSet anims = new AnimationSet(getContext() , null);
+        TranslateAnimation transAnim = new TranslateAnimation(0 , 0, 0 , containerView.getHeight() );
+        AlphaAnimation alphaAnim = new AlphaAnimation(1 ,0);
+        anims.setDuration(800);
+        anims.setFillAfter(true);
+        anims.addAnimation(transAnim);
+        anims.addAnimation(alphaAnim);
+        containerView.startAnimation(anims);
+    }
+
+
+    public  void open() {
+        if(is_closed) {
+            is_closed = false ;
+            AnimationSet anims = new AnimationSet(getContext() , null);
+            TranslateAnimation transAnim = new TranslateAnimation(0 , 0, containerView.getHeight() , 0);
+            AlphaAnimation alphaAnim = new AlphaAnimation(0 ,1);
+            anims.setDuration(800);
+            anims.setFillAfter(true);
+            anims.addAnimation(transAnim);
+            anims.addAnimation(alphaAnim);
+            containerView.startAnimation(anims);
+        }
+    }
 
 
 

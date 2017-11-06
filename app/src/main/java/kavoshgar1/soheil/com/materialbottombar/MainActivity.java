@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,7 +17,7 @@ import Listeners.OnClickBottomItem;
 import Listeners.OnClickNestedBottomItem;
 import Models.NestedBottombar;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private MaterialBottomBar material_bottom_bar ;
     private LinearLayout container_activity_main ;
@@ -84,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
                         alert.setNegativeButton("Photo Library !", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                material_bottom_bar.closeItem();
+                               // material_bottom_bar.closeItem();
+                                material_bottom_bar.close();
                                 dialogInterface.dismiss();
                             }
                         }).show();
@@ -97,11 +99,22 @@ public class MainActivity extends AppCompatActivity {
 
 
                     case 3 :
-                       //TODO
+                        //TODO
+                        break;
                 }
             }
         }).build(null);
 
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+
+            case  R.id.text_activity_main :
+                material_bottom_bar.open();
+                break;
+        }
     }
 }
